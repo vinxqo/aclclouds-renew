@@ -1,0 +1,31 @@
+name: ACLClouds Auto-Renew
+
+on:
+  schedule:
+    # Every 2 days at 00:00 UTC
+    - cron: '0 0 */2 * *'
+  workflow_dispatch:
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install playwright
+          npx playwright install chromium --with-deps
+
+      - name: Run renew script
+        env:
+          ACL_EMAIL: ${{ secrets.ACL_EMAIL }}
+          ACL_PASSWORD: ${{ secrets.ACL_PASSWORD }}
+        run: node renew.js
