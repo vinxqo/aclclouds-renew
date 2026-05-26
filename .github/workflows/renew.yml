@@ -25,7 +25,8 @@ jobs:
 
       - name: Run Renew Script
         env:
-          ACL_COOKIES: ${{ secrets.ACL_COOKIES }}
+          ACL_USERNAME: ${{ secrets.ACL_USERNAME }}
+          ACL_PASSWORD: ${{ secrets.ACL_PASSWORD }}
         run: python renew.py
 
       # 新增：将生成的截图上传到 GitHub Actions 页面
