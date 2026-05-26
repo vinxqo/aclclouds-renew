@@ -2,7 +2,7 @@ name: ACLClouds Auto Renew
 
 on:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */12 * * *'
   workflow_dispatch:
 
 jobs:
@@ -25,8 +25,7 @@ jobs:
 
       - name: Run Renew Script
         env:
-          ACL_USERNAME: ${{ secrets.ACL_USERNAME }}
-          ACL_PASSWORD: ${{ secrets.ACL_PASSWORD }}
+          ACL_COOKIES: ${{ secrets.ACL_COOKIES }}
         run: python renew.py
 
       # 新增：将生成的截图上传到 GitHub Actions 页面
