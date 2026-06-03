@@ -36,3 +36,12 @@ jobs:
           name: Debug-Screenshots
           path: "*.png" # 上传所有生成的 png 图片
           retention-days: 5 # 截图保留 5 天
+
+      - name: Keepalive
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          date -u > .keepalive
+          git add .keepalive
+          git commit -m "chore: keepalive $(date -u +%Y-%m-%d)"
+          git push
