@@ -1,6 +1,15 @@
 import os
 from playwright.sync_api import sync_playwright
 
+RENEW_TEXTS = [
+    "Renouveler",  # FR 法语
+    "Renew",       # EN 英语
+    "Erneuern",    # DE 德语
+    "Renovar",     # ES/PT 西班牙语/葡萄牙语
+    "Обновить",    # RU 俄语
+    "Rinnova",     # IT 意大利语
+]
+
 def run(playwright):
     browser = playwright.chromium.launch(headless=True)
     context = browser.new_context(
@@ -40,21 +49,24 @@ def run(playwright):
         print("截图保存成功: debug_page.png")
 
         # 放宽查找条件，只要包含 Renew 文本的元素都找出来
-        renew_buttons = page.locator("text='Renew'")
-        count = renew_buttons.count()
+        total_clicked = 0
+        for text in RENEW_TEXTS:
+            buttons = page.locator(f"text='{text}'")
+            count = buttons.count()
+            if count > 0:
+                print(f"找到按钮文字 '{text}'，共 {count} 个，开始点击...")
+                for i in range(count):
+                    btn = buttons.nth(i)
+                    if btn.is_visible():
+                        btn.click()
+                        total_clicked += 1
+                        print(f"已点击第 {total_clicked} 个续期按钮（{text}）。")
+                        page.wait_for_timeout(3000)
 
-        if count == 0:
-            print("未找到 'Renew' 按钮。请查看下载的截图确认当前页面状态。")
+        if total_clicked == 0:
+            print("未找到任何续期按钮，请查看截图确认页面状态。")
         else:
-            print(f"找到 {count} 个 'Renew' 元素，准备点击...")
-            for i in range(count):
-                button = renew_buttons.nth(i)
-                if button.is_visible():
-                    button.click()
-                    print(f"已点击第 {i+1} 个 Renew 按钮。")
-                    page.wait_for_timeout(3000) 
-            
-            # 点击完成后再截一张图看看结果
+            print(f"共点击了 {total_clicked} 个续期按钮。")
             page.screenshot(path="debug_page_after_click.png", full_page=True)
 
         print("任务执行完毕。")
