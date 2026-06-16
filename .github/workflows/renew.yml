@@ -6,6 +6,9 @@ on:
     - cron: '0 0 */2 * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   renew:
     runs-on: ubuntu-latest
@@ -32,3 +35,12 @@ jobs:
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
           PROXY_URL: ${{ secrets.PROXY_URL }}
         run: node renew.js
+
+      - name: Keepalive
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          date -u > .keepalive
+          git add .keepalive
+          git commit -m "chore: keepalive $(date -u +%Y-%m-%d)"
+          git push
